@@ -1,4 +1,4 @@
-// src/Model/EnrollmentDAO.java
+// src/model/EnrollmentDAO.java
 package lecture_list;
 
 import java.sql.*;
@@ -28,7 +28,7 @@ public class EnrollmentDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+            e.printStackTrace(); 
         }
 
         return enrolledCourses;
@@ -110,12 +110,12 @@ public class EnrollmentDAO {
             return 0; // 성공
 
         } catch (SQLException e) {
-            e.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+            e.printStackTrace(); 
             try {
                 if (conn != null)
                     conn.rollback();
             } catch (SQLException ex) {
-                ex.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+                ex.printStackTrace(); 
             }
             return -1; // 기타 오류
         } finally {
@@ -135,7 +135,7 @@ public class EnrollmentDAO {
                     conn.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+                e.printStackTrace(); 
             }
         }
     }
@@ -196,12 +196,12 @@ public class EnrollmentDAO {
             return 0; // 취소 성공
 
         } catch (SQLException e) {
-            e.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+            e.printStackTrace(); 
             try {
                 if (conn != null)
                     conn.rollback();
             } catch (SQLException ex) {
-                ex.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+                ex.printStackTrace(); 
             }
             return -1; // 기타 오류
         } finally {
@@ -219,56 +219,26 @@ public class EnrollmentDAO {
                     conn.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+                e.printStackTrace(); 
             }
         }
     }
 
-    // 클래스 정보 조회 메소드
-    public Classes getClassById(int classId) {
-        String sql = "SELECT c.class_id, c.course_id, co.course_name, co.department_id, d.department_name, " +
-                     "co.classification, co.semester AS course_semester, co.credit, co.professor_name, " +
-                     "c.room_no, c.day_of_week, c.start_time, c.end_time, c.capacity, c.enrolled, co.is_retake " +
-                     "FROM Class c " +
-                     "JOIN Course co ON c.course_id = co.course_id " +
-                     "JOIN Department d ON co.department_id = d.department_id " +
-                     "WHERE c.class_id = ?";
-
+    // 학생의 현재 수강 학점 가져오기
+    public int getCurrentCredits(int studentId) {
+        int totalCredits = 0;
+        String sql = "SELECT SUM(c.credit) AS total_credits FROM Enrollment e JOIN Class cl ON e.class_id = cl.class_id JOIN Course c ON cl.course_id = c.course_id WHERE e.student_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-             
-            pstmt.setInt(1, classId);
+            pstmt.setInt(1, studentId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    int courseId = rs.getInt("course_id");
-                    String courseName = rs.getString("course_name");
-                    int departmentId = rs.getInt("department_id");
-                    String departmentName = rs.getString("department_name");
-                    String classification = rs.getString("classification");
-                    String courseSemester = rs.getString("course_semester");
-                    int credit = rs.getInt("credit");
-                    String professorName = rs.getString("professor_name");
-                    String roomNo = rs.getString("room_no");
-                    String dayOfWeek = rs.getString("day_of_week");
-                    String startTime = rs.getString("start_time");
-                    String endTime = rs.getString("end_time");
-                    int capacity = rs.getInt("capacity");
-                    int enrolled = rs.getInt("enrolled");
-                    boolean isRetake = rs.getBoolean("is_retake");
-
-                    return new Classes(classId, courseId, courseName, departmentId, departmentName,
-                                      classification, courseSemester, credit, professorName,
-                                      roomNo, dayOfWeek, startTime, endTime,
-                                      capacity, enrolled, isRetake);
+                    totalCredits = rs.getInt("total_credits");
                 }
             }
-
         } catch (SQLException e) {
-            e.printStackTrace(); // 실제 프로젝트에서는 로깅 프레임워크 사용 권장
+            e.printStackTrace();
         }
-
-        return null;
+        return totalCredits;
     }
-
-    // 기타 필요한 메소드...
 }

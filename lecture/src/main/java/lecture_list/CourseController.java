@@ -45,7 +45,7 @@ public class CourseController extends HttpServlet {
 
         // 모든 강의 목록 조회
         List<Course> courses = courseDAO.getAllCourses();
-        request.setAttribute("allCourses", courses);
+        request.setAttribute("allCourses", courses);//jsp의 allCourses 파라미터로 getAllCourse한 값을 전달
 
         // 학생이 이미 신청한 강의의 course_id와 class_id 목록 조회
         Map<Integer, Integer> enrolledCourses = enrollmentDAO.getEnrolledCourses(studentId);
@@ -62,6 +62,10 @@ public class CourseController extends HttpServlet {
             departmentsMap.put(dept.getDepartmentId(), dept.getDepartmentName());
         }
         request.setAttribute("departmentsMap", departmentsMap);
+        // 학생의 현재 수강 학점 조회
+        int currentCredits = enrollmentDAO.getCurrentCredits(studentId);
+        System.out.println("CourseController - Current Credits: " + currentCredits); // 로그 추가
+        request.setAttribute("currentCredits", currentCredits);
 
         request.getRequestDispatcher("/WEB-INF/views/search_lecture/courseList.jsp").forward(request, response);
     }
