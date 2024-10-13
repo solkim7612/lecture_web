@@ -113,6 +113,7 @@ th {
 $(document).ready(function() {
     // 필터링 버튼 클릭 시
     $("#filterButton").click(function() {
+    	//필터의 value 가져옴
         var selectedDepartment = $("#departmentFilter").val();
         var selectedClassification = $("#classificationFilter").val();
 
@@ -122,15 +123,18 @@ $(document).ready(function() {
             var classCell = $(this).find("td:nth-child(5)").text(); // 5번째 컬럼: 분류
 
             var showRow = true;
-
+			
+            //선택된 학과의 값과 4번째 컬럼(학과이름)의 값이 다르거나
             if (selectedDepartment && deptCell !== selectedDepartment) {
                 showRow = false;
             }
 
+            //선택된 분류의 값과 5번째 컬럼(분류)의 값이 다르면 return false;
             if (selectedClassification && classCell !== selectedClassification) {
                 showRow = false;
             }
 
+            //showRow가 true면 출력 false면 제거
             if (showRow) {
                 $(this).show();
             } else {
@@ -183,7 +187,7 @@ $(document).ready(function() {
                                + '</tr>';
                     $("#enrolledTable tbody").append(newRow);
 
-                    // "강의 목록" 테이블의 신청 인원 업데이트
+                    // "강의 목록" 테이블의 신청 인원 업데이트,EnrollAjaxServlet에서 property로 전달한 update인원수를 받아와 html로 응답
                     row.find('td:nth-child(12)').text(response.enrolled); // 12번째 컬럼: 신청 인원
 
                     // 신청 버튼 비활성화 및 텍스트 변경
@@ -285,7 +289,7 @@ $(document).ready(function() {
         <span id="currentCredits">
             현재 수강 학점: 
             <%
-                Integer credits = (Integer) request.getAttribute("currentCredits");
+                Integer credits = (Integer) request.getAttribute("currentCredits");//CourseController에서 set currentCredits한 값 받아옴
                 if (credits != null) {
                     out.print(credits);
                 } else {
@@ -304,6 +308,7 @@ $(document).ready(function() {
             <select id="departmentFilter" name="department">
                 <option value="">전체</option>
                 <%
+              //학과 id,name으로 매핑되어 있는 departmentMap 불러움 
                     Map<Integer, String> departmentsMap = (Map<Integer, String>) request.getAttribute("departmentsMap");
                     if (departmentsMap != null) {
                         for (Map.Entry<Integer, String> entry : departmentsMap.entrySet()) {
