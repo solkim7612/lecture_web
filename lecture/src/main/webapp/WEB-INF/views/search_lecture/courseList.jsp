@@ -82,20 +82,18 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
-/* 사이드바 스타일 */
-/* #sidebar {
-    width: 200px;
-    float: left;
-    border: 1px solid #ddd;
-    padding: 10px;
-    box-sizing: border-box;
-}
- */
+
 /* 콘텐츠 영역 스타일 */
 #content {
     flex-grow: 1;
-    padding: 0 20px 20px 20px;
-    margin-left: 220px;
+    padding:0 20px 20px 20px;
+    margin-left: 250px; /* 사이드바의 너비와 동일하게 설정 */
+    transition: margin-left 0.3s ease; /* 애니메이션을 위한 트랜지션 추가 */
+}
+
+/* 사이드바가 숨겨졌을 때 메인 콘텐츠 영역의 스타일 */
+#content.sidebar-collapsed {
+    margin-left: 0;
 }
 
 /* 강의 목록 테이블을 스크롤리로 만들기 위한 스타일 */
@@ -106,10 +104,11 @@ th {
     margin-bottom: 40px;
 }
 </style>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/sidebar.css">
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/header.css"> <!-- CSS 파일 분리 권장 -->
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
 $(document).ready(function() {
     // 필터링 버튼 클릭 시
     $("#filterButton").click(function() {
@@ -142,6 +141,7 @@ $(document).ready(function() {
             }
         });
     });
+   
 
     // 강의 신청 버튼 클릭 시 AJAX 요청
     $(".btn-action").click(function() {
@@ -269,13 +269,27 @@ $(document).ready(function() {
         });
     });
 });
+function toggleSidebar() {
+    const wrapper = document.querySelector(".wrapper");
+    const menuControl = document.querySelector(".menu-control");
+    const content = document.getElementById("content"); // 메인 콘텐츠 영역 선택
+
+    wrapper.classList.toggle("hide"); // 사이드바 표시/숨김 토글
+    content.classList.toggle("sidebar-collapsed"); // 메인 콘텐츠 영역에 클래스 토글
+
+    if (wrapper.classList.contains("hide")) {
+        menuControl.textContent = "▶"; // 사이드바 닫힘 상태
+    } else {
+        menuControl.textContent = "◀"; // 사이드바 열림 상태
+    }
+}
 </script>
 </head>
 <body>
 	
-	<div id="sidebar">
-        <%@ include file="/WEB-INF/views/sidebar.jsp" %>
-    </div>
+	
+       <%@ include file="/WEB-INF/views/sidebar.jsp" %>
+   
     <div id="content">
   
 	<div>
@@ -336,7 +350,6 @@ $(document).ready(function() {
 
     <!-- 알림 메시지 표시 -->
     <div class="message">
-        <%-- 메시지는 AJAX 작업 후에 클라이언트 컨셉에서 처리하는 것으로 여기서는 필요 없음 --%>
     </div>
 
     <!-- 전체 강의 목록 -->

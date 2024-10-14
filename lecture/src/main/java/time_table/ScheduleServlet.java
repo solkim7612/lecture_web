@@ -34,7 +34,7 @@ public class ScheduleServlet extends HttpServlet {
 		
 		
 		// 스케쥴 표 렌더링을 위한 데이터 저장 - 렌더용 2차원배열 저장
-		int totalDays = 6;
+		int totalDays = 6;                                 
 		int totalPeriods = 13;
 		Subject subjects[][] = new Subject[totalDays][totalPeriods];
 		
