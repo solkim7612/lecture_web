@@ -1,4 +1,4 @@
-package login.ctor;
+package Model;
 
 public class Student {
 	private int student_id;
